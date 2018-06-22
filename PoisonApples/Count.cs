@@ -10,7 +10,7 @@ namespace PoisonApples
     {
 
         public void RunningCommentry(IEnumerable<Apple> AllApples, int a, int b)
-        { 
+        {
             foreach (var apple in AllApples)
             {
                 Console.WriteLine($"Apple {a} is {apple.Colour}");
@@ -23,20 +23,42 @@ namespace PoisonApples
             }
             Console.WriteLine();
         }
-        
+
         public void CreateSummery(IEnumerable<Apple> AllApples, int a, int b)
         {
             Console.WriteLine("Creating Summary...");
             Console.WriteLine();
 
-            var AllPoisoned = AllApples.Skip(a).Take(10000).Where(apple => apple.Poisoned).ToList();
+            var appleList = AllApples.Take(b).ToList().Skip(a).Take(b-a);
 
-            var SecondBiggestGroup = AllPoisoned.GroupBy(apple => apple.Colour).OrderBy(g => g.Count()).ToList()[1].ToList().First().Colour;
+            var AllPoisoned = appleList.Where(apple => apple.Poisoned).ToList();
 
-            var x = String.Join(", ", AllApples.Skip(a).Take(10000).ToList().Select(apple => apple.Poisoned.ToString() + " - " + apple.Colour));//.Replace(", True, ", "#").Split('#').OrderByDescending(s => s.Length).First().Length / 7;
-            
-            //var LargestNonPoisonedRedAppleStreak = 
+            var SecondBiggestGroup = AllPoisoned.GroupBy(apple => apple.Colour).OrderBy(g => g.Count()).ToList()[1].ToList();
 
+            var LargestNonPoisonedRedAppleStreak = appleList.Aggregate(
+                    new { Streak = 0, count = 0 },
+                    (agg, apple) => apple.Poisoned == false && apple.Colour == "Red" ?
+                    new { Streak = Math.Max(agg.Streak, agg.count + 1), count = agg.count + 1 } :
+                    new { agg.Streak, count = 0 },
+                    agg => agg.Streak);
+
+            var DoubleGreenApples = appleList.Aggregate(
+                    new { Counter = 0, smallCounter = 0 },
+                    (agg, apple) => apple.Colour == "Green" ?
+                    new { Counter = agg.Counter + agg.smallCounter, smallCounter = agg.smallCounter + 1 } :
+                    new { agg.Counter, smallCounter = 0 },
+                    agg => agg.Counter);
+
+            Console.WriteLine("Summary Compiled.");
+            Console.WriteLine("Findings : ");
+            Console.WriteLine("==================================================");
+            Console.WriteLine();
+            Console.WriteLine($"{AllPoisoned.Count()} apples were poisoned in total.");
+            Console.WriteLine($"{SecondBiggestGroup.Count()} of all the poisoned apples were {SecondBiggestGroup.First().Colour} making this the second biggest poisoned group.");
+            Console.WriteLine($"The largest 'streak' of Red apples that were safe to eat was {LargestNonPoisonedRedAppleStreak}.");
+            Console.WriteLine($"out of the {b-a} apples checked, you could get 2 green apples in a row {DoubleGreenApples} times.");
+            Console.WriteLine();
+            Console.WriteLine("==================================================");
             Console.WriteLine();
         }
     }

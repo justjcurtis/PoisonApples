@@ -19,7 +19,8 @@ namespace PoisonApples
 
             var running = true;
             var loopcount = 0;
-            
+
+            var AllApples = picker.pickApples();
             while (running)
             {
                 var a = loopcount * 10000;
@@ -27,9 +28,7 @@ namespace PoisonApples
                 
                 Console.WriteLine("Picking Apples...");
                 Console.WriteLine();
-
-                var AllApples = picker.pickApples();
-
+                
                 counter.RunningCommentry(AllApples, a, b);
 
                 counter.CreateSummery(AllApples, a, b);
